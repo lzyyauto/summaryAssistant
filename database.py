@@ -62,9 +62,22 @@ def update_article(title, response_json):
     cnx.commit()
 
 
+def is_article_processed(title):
+    cursor.execute('SELECT processed FROM articles WHERE title = %s',
+                   (title, ))
+    result = cursor.fetchone()
+    return bool(result and result[0])
+
+
 def save_article(file, response):
     try:
+        if is_article_processed(file):
+            print(f"文件 {file} 已处理过，跳过")
+            return True
+
         response_json = json.loads(response)
+
+        details = response_json.get('details', {})
         cursor.execute(
             '''
             INSERT INTO articles (
@@ -76,14 +89,19 @@ def save_article(file, response):
                 %s, %s, %s, %s, 
                 %s, TRUE
             )
-        ''', (file, response_json['type'], response_json['confidence'],
-              response_json['summary'],
-              json.dumps(response_json['details']['methods']),
-              json.dumps(response_json['details']['tools']),
-              json.dumps(response_json['details']['data_sources']),
-              json.dumps(response_json['details']['key_insights']),
-              response_json['notes']))
+        ''', (file, response_json.get(
+                'type', 'not_relevant'), response_json.get(
+                    'confidence', 0.0), response_json.get(
+                        'summary', ''), json.dumps(details.get('methods', [])),
+              json.dumps(details.get(
+                  'tools', [])), json.dumps(details.get('data_sources', [])),
+              json.dumps(details.get('key_insights',
+                                     [])), response_json.get('notes', '')))
         cnx.commit()
+        return True
     except json.JSONDecodeError as e:
-        print(f"JSON解析错误: {e}")
-        return
+        print(f"JSON解析错误 ({file}): {e}")
+        return False
+    except Exception as e:
+        print(f"保存文章时出错 ({file}): {e}")
+        return False
