@@ -1,0 +1,52 @@
+请帮我分析这篇文章。这是出自一个关注中国出海应用、Google获取自然流量及热词研究的系列文章。
+    使用严格的JSON格式返回分析结果，JSON结构如下：
+    json
+    {
+    "title": "string",
+    "type": "string", 
+    "confidence": "float", 
+    "summary": "string", 
+    "details": {
+        "methods": ["string"], 
+        "tools": ["string"], 
+        "data_sources": ["string"], 
+        "key_insights": ["string"]
+    },
+    "notes": "string"
+    }
+    文章类型枚举值：
+    "traffic_acquisition": Google自然流量获取方法
+    "keyword_research": 热词发现和研究
+    "overseas_strategies": 出海策略
+    "not_relevant": 与主题无关
+
+    提取规则：
+    准确判断文章类型
+    计算类型判定的置信度(0-1)
+    提取100字以内的核心要点总结
+    根据文章类型提取相关信息：
+
+    如果是"traffic_acquisition"：
+    提取流量获取方法
+    具体工具和步骤
+    实施策略
+    效果评估方式
+
+    如果是"keyword_research"：
+    热词发现方法
+    数据收集途径
+    筛选标准
+    应用场景
+
+    如果是"overseas_strategies"：
+    关键策略
+    实践方法
+    行业洞察
+
+    过滤掉:
+    课程营销信息
+    社群引流内容
+    无实操价值的个人观点
+
+    请严格按照JSON格式返回分析结果，确保信息准确、简洁且有价值。
+    原文如下:
